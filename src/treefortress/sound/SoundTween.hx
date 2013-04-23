@@ -17,7 +17,7 @@ class SoundTween {
 		this.duration = duration;
 	}
 	
-	public function update():Bool {
+	public inline function update():Bool {
 		sound.volume = easeOutQuad(Lib.getTimer() - startTime, startVolume, endVolume - startVolume, duration);
 		if(Lib.getTimer() - startTime >= duration){
 			sound.volume = endVolume;
@@ -29,11 +29,11 @@ class SoundTween {
 	 * Equations from the man Robert Penner, see here for more:
 	 * http://www.dzone.com/snippets/robert-penner-easing-equations
 	 */
-	static function easeOutQuad(position:Float, startValue:Float, change:Float, duration:Float):Float {
+	static inline function easeOutQuad(position:Float, startValue:Float, change:Float, duration:Float):Float {
 		return -change *(position/=duration)*(position-2) + startValue;
 	}
 	
-	static function easeInOutQuad(position:Float, startValue:Float, change:Float, duration:Float):Float {
+	static inline function easeInOutQuad(position:Float, startValue:Float, change:Float, duration:Float):Float {
 		if ((position/=duration/2) < 1){
 			return change/2*position*position + startValue;
 		}
