@@ -15,7 +15,7 @@ The goal of SoundHX is to simplifying playback of your audio files, with a focus
 
 #API Overview
 
-Full documentation can be found here: http://treefortress.com/libs/SoundHX/docs/.
+Full documentation can be found here: http://treefortress.com/libs/SoundAS/docs/.
 
 ###SoundHX
 This Static Class is the main interface for the library. It's responsible for loading and controlling all sounds globally.

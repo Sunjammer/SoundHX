@@ -1,4 +1,4 @@
-<project name="SoundHX" url="https://github.com/Sunjammer/SoundHX" license="GPL">
+<project name="SoundHX" url="https://github.com/Sunjammer/SoundHX" license="WTFPL">
     <user name="Decept404"/>
     <description>Haxe fork of Treefortress' SoundAS</description>
     <version name="1.0">Github dev version</version>
