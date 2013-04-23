@@ -9,20 +9,54 @@ class SoundTween {
 	public var duration:Float;
 	public var sound:SoundInstance;
 	
-	public function new(si:SoundInstance, endVolume:Float, duration:Float) {
-		sound = si;
-		startTime = Lib.getTimer();
-		startVolume = si.volume;
-		this.endVolume = endVolume;
-		this.duration = duration;
+	var isMasterFade:Bool;
+	var _isComplete:Bool;
+	
+	public function new(si:SoundInstance, endVolume:Float, duration:Float, isMasterFade:Bool = false) {
+		if(si!=null){
+			sound = si;
+			startVolume = sound.volume;
+		}
+		this.isMasterFade = isMasterFade;
+		init(startVolume, endVolume, duration);
 	}
 	
-	public inline function update():Bool {
-		sound.volume = easeOutQuad(Lib.getTimer() - startTime, startVolume, endVolume - startVolume, duration);
-		if(Lib.getTimer() - startTime >= duration){
+	public function update(t:Int):Bool {
+		if(_isComplete){ return _isComplete; }
+		
+		if(isMasterFade){
+			if(t - startTime < duration){
+				SoundHX.masterVolume = easeOutQuad(t - startTime, startVolume, endVolume - startVolume, duration);
+			} else {
+				SoundHX.masterVolume = endVolume;
+			}
+			_isComplete = SoundHX.masterVolume == endVolume;
+			
+		} else {
+			if(t - startTime < duration){
+				sound.volume = easeOutQuad(t - startTime, startVolume, endVolume - startVolume, duration);
+			} else {
+				sound.volume = endVolume;
+			}
+			_isComplete = sound.volume == endVolume;
+		}
+		return _isComplete;
+		
+	}
+	
+	public function init(startVolume:Float, endVolume:Float, duration:Float):Void {
+		this.startTime = Lib.getTimer();
+		this.startVolume = startVolume;
+		this.endVolume = endVolume;
+		this.duration = duration;
+		_isComplete = false;
+	}
+	
+	public function end(applyEndVolume:Bool = false):Void {
+		_isComplete = true;
+		if(applyEndVolume){
 			sound.volume = endVolume;
 		}
-		return sound.volume == endVolume;
 	}
 	
 	/**
@@ -39,4 +73,13 @@ class SoundTween {
 		}
 		return -change/2 * ((--position)*(position-2) - 1) + startValue;
 	}
+	
+	public var isComplete(get_isComplete, null):Bool;
+	private function get_isComplete():Bool 
+	{
+		return _isComplete;
+	}
+
+
+	
 }
