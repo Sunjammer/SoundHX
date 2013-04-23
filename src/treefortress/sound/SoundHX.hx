@@ -1,6 +1,8 @@
-package treefortress.sound
-{
+package treefortress.sound;
+	import com.furusystems.events.Signal;
+	import flash.display.Shape;
 	import flash.display.Sprite;
+	import flash.errors.Error;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
@@ -8,25 +10,23 @@ package treefortress.sound
 	import flash.media.SoundLoaderContext;
 	import flash.net.URLRequest;
 	import flash.utils.Dictionary;
-	
-	import org.osflash.signals.Signal;
-	
-
-	public class SoundAS
+	using Lambda;
+	class SoundHX
 	{
-		protected static var instances:Vector.<SoundInstance>;
-		protected static var instancesBySound:Dictionary;
-		protected static var instancesByType:Object;
-		protected static var activeTweens:Vector.<SoundTween>;
+		static var instances:Array<SoundInstance>;
+		static var instancesBySound:Map<Sound, SoundInstance>;
+		static var instancesByType:Map<String,SoundInstance>;
+		static var activeTweens:Array<SoundTween>;
 		
-		protected static var ticker:Sprite;
-		protected static var _mute:Boolean;
-		protected static var _volume:Number;
+		static var ticker:Shape;
+		static var _mute:Bool;
+		static var _volume:Float;
 		
 		//Static Initialization
+		public static function ineit():Void
 		{
 			init();
-			ticker = new Sprite();
+			ticker = new Shape();
 			ticker.addEventListener(Event.ENTER_FRAME, onTick);
 		}
 		
@@ -34,23 +34,23 @@ package treefortress.sound
 		/**
 		 * Dispatched when an external Sound has completed loading. 
 		 */
-		public static var loadCompleted:Signal;
+		public static var loadCompleted:Signal<SoundInstance>;
 		
 		/**
 		 * Dispatched when an external Sound has failed loading. 
 		 */
-		public static var loadFailed:Signal;
+		public static var loadFailed:Signal<SoundInstance>;
 		
 		/**
 		 * Play audio by type. It must already be loaded into memory using the addSound() or loadSound() APIs. 
 		 * @param type
 		 * @param volume
 		 * @param startTime Starting time in milliseconds
-		 * @param loops Number of times to loop audio, pass -1 to loop forever.
+		 * @param loops Float of times to loop audio, pass -1 to loop forever.
 		 * @param allowMultiple Allow multiple, overlapping instances of this Sound (useful for SoundFX)
 		 * @param allowInterrupt If this sound is currently playing, interrupt it and start at the specified StartTime. Otherwise, just update the Volume.
 		 */
-		public static function play(type:String, volume:Number = 1, startTime:Number = -1, loops:int = 0, allowMultiple:Boolean = false, allowInterrupt:Boolean = true):SoundInstance {
+		public static function play(type:String, volume:Float = 1, startTime:Float = -1, loops:Int = 0, allowMultiple:Bool = false, allowInterrupt:Bool = true):SoundInstance {
 			var si:SoundInstance = getSound(type);
 			
 			//Sound is playing, and we're not allowed to interrupt it. Just set volume.
@@ -68,7 +68,7 @@ package treefortress.sound
 		 * Convenience function to play a sound that should loop forever.
 		 * 
 		 */
-		public static function playLoop(type:String, volume:Number = 1, startTime:Number = -1):SoundInstance {
+		public static function playLoop(type:String, volume:Float = 1, startTime:Float = -1):SoundInstance {
 			return play(type, volume, startTime, -1, false);
 		}
 		
@@ -76,7 +76,7 @@ package treefortress.sound
 		 * Convenience function to play a sound that can have overlapping instances (ie click or soundFx).
 		 * 
 		 */
-		public static function playFx(type:String, volume:Number = 1, startTime:Number = -1, loops:int = 0):SoundInstance {
+		public static function playFx(type:String, volume:Float = 1, startTime:Float = -1, loops:Int = 0):SoundInstance {
 			return play(type, volume, startTime, 0, true);
 		}
 		
@@ -90,9 +90,9 @@ package treefortress.sound
 		/**
 		 * Resume all paused instances.
 		 */
-		public static function resumeAll():void {
-			for(var i:int = 0, l:int = instances.length; i < l; i++){
-				instances[i].resume();
+		public static function resumeAll():Void {
+			for(i in instances){
+				i.resume();
 			}
 		}
 		
@@ -106,72 +106,74 @@ package treefortress.sound
 		/**
 		 * Pause all sounds
 		 */
-		public static function pauseAll():void {
-			for(var i:int = 0, l:int = instances.length; i < l; i++){
-				instances[i].pause();
+		public static function pauseAll():Void {
+			for(i in instances){
+				i.pause();
 			}
 		}
 		
 		/** 
 		 * Fade specific sound starting at the current volume
 		 **/
-		public static function fadeTo(type:String, endVolume:Number = 1, duration:Number = 1000):SoundInstance {
+		public static function fadeTo(type:String, endVolume:Float = 1, duration:Float = 1000):SoundInstance {
 			return getSound(type).fadeTo(endVolume, duration);
 		}
 		
 		/**
 		 * Fade all sounds starting from their current Volume
 		 */
-		public static function fadeAllTo(endVolume:Number = 1, duration:Number = 1000):void {
-			for(var i:int = 0, l:int = instances.length; i < l; i++){
-				instances[i].fadeTo(endVolume, duration);
+		public static function fadeAllTo(endVolume:Float = 1, duration:Float = 1000):Void {
+			for(i in instances){
+				i.fadeTo(endVolume, duration);
 			}
 		}
 		
 		/** 
 		 * Fade specific sound specifying both the StartVolume and EndVolume.
 		 **/
-		public static function fadeFrom(type:String, startVolume:Number = 0, endVolume:Number = 1, duration:Number = 1000):SoundInstance {
+		public static function fadeFrom(type:String, startVolume:Float = 0, endVolume:Float = 1, duration:Float = 1000):SoundInstance {
 			return getSound(type).fadeFrom(startVolume, endVolume, duration);
 		}
 		
 		/**
 		 * Fade all sounds specifying both the StartVolume and EndVolume.
 		 */
-		public static function fadeAllFrom(startVolume:Number = 0, endVolume:Number = 1, duration:Number = 1000):void {
-			for(var i:int = 0, l:int = instances.length; i < l; i++){
-				instances[i].fadeFrom(startVolume, endVolume, duration);
+		public static function fadeAllFrom(startVolume:Float = 0, endVolume:Float = 1, duration:Float = 1000):Void {
+			for(i in instances){
+				i.fadeFrom(startVolume, endVolume, duration);
 			}
 		}
 		
 		/**
 		 * Mute all instances.
 		 */
-		public static function get mute():Boolean { return _mute; }
-		public static function set mute(value:Boolean):void {
-			_mute = value;
-			for(var i:int = 0, l:int = instances.length; i < l; i++){
-				instances[i].mute = _mute;
+		public static var mute(default, set_mute):Bool;
+		public static function set_mute(value:Bool):Bool {
+			mute = value;
+			for(i in instances){
+				i.mute = mute;
 			}
+			return mute;
 		}
 		
 		/**
 		 * Set volume on all instances
 		 */
-		public static function get volume():Number { return _volume; }
-		public static function set volume(value:Number):void {
-			_volume = value;
-			for(var i:int = 0, l:int = instances.length; i < l; i++){
-				instances[i].volume = _volume;
+		public static var volume(default, set_volume):Float;
+		public static function set_volume(value:Float):Float {
+			volume = value;
+			for(i in instances){
+				i.volume = volume;
 			}
+			return volume;
 		}
 		
 		/**
 		 * Returns a SoundInstance for a specific type.
 		 */
-		public static function getSound(type:String, forceNew:Boolean = false):SoundInstance {
+		public static function getSound(type:String, forceNew:Bool = false):SoundInstance {
 			var si:SoundInstance = instancesByType[type];
-			if(!si){ throw(new Error("[SoundAS] Sound with type '"+type+"' does not appear to be loaded.")); }
+			if(si == null){ throw(new Error("[SoundHX] Sound with type '"+type+"' does not appear to be loaded.")); }
 			if(forceNew){
 				si = si.clone();	
 			} 
@@ -185,7 +187,7 @@ package treefortress.sound
 		 * @param buffer
 		 * 
 		 */
-		public static function loadSound(url:String, type:String, buffer:int = 100):void {
+		public static function loadSound(url:String, type:String, buffer:Int = 100):Void {
 			var si:SoundInstance = new SoundInstance();
 			si.type = type;
 			si.url = url; //Useful for looking in case of load error
@@ -199,7 +201,7 @@ package treefortress.sound
 		/**
 		 * Inject a sound that has already been loaded.
 		 */
-		public static function addSound(type:String, sound:Sound):void {
+		public static function addSound(type:String, sound:Sound):Void {
 			var si:SoundInstance = new SoundInstance();
 			si.type = type;
 			si.sound = sound;
@@ -209,11 +211,11 @@ package treefortress.sound
 		/**
 		 * Remove a sound from memory.
 		 */
-		public static function removeSound(type:String):void {
-			for(var i:int = instances.length - 1; i >= 0; i--){
-				if(instances[i].type == type){
-					instances[i].destroy();
-					instances.splice(i, 1);
+		public static function removeSound(type:String):Void {
+			for(i in instances){
+				if(i.type == type){
+					i.destroy();
+					instances.remove(i);
 				}
 			}
 		}
@@ -221,9 +223,9 @@ package treefortress.sound
 		/**
 		 * Unload all Sound instances.
 		 */
-		public static function removeAll():void {
-			for(var i:int = 0; i < instances.length; i++){
-				instances[i].destroy();
+		public static function removeAll():Void {
+			for(i in instances){
+				i.destroy();
 			}
 			init();
 		}
@@ -232,40 +234,40 @@ package treefortress.sound
 		 * PRIVATE
 		 */
 		
-		protected static function init():void {
+		static function init():Void {
 			//Create external signals
-			if(!loadCompleted){ loadCompleted = new Signal(SoundInstance); }
-			if(!loadFailed){ loadFailed = new Signal(SoundInstance); }
+			if (loadCompleted == null) { loadCompleted = new Signal<SoundInstance>(); }
+			if (loadFailed == null) { loadFailed = new Signal<SoundInstance>(); }
 			
 			//Init collections
-			instances = new <SoundInstance>[];
-			instancesBySound = new Dictionary(true);
-			instancesByType = {};
-			activeTweens = new Vector.<SoundTween>();
+			instances = [];
+			activeTweens = [];
+			instancesBySound = new Map<Sound, SoundInstance>();
+			instancesByType = new Map<String, SoundInstance>();
 		}
 		
-		public static function addTween(type:String, startVolume:Number, endVolume:Number, duration:Number):void {
+		public static function addTween(type:String, startVolume:Float, endVolume:Float, duration:Float):Void {
 			var si:SoundInstance = getSound(type);
 			if(startVolume >= 0){ si.volume = startVolume; }
 			var tween:SoundTween = new SoundTween(si, endVolume, duration);
 			//Remove any active tweens for this Sound
-			for(var i:int = activeTweens.length - 1; i >= 0; i--){
-				if(activeTweens[i].sound == si){
-					activeTweens.splice(i, 1);
+			for(i in activeTweens){
+				if (i.sound == si) {
+					activeTweens.remove(i);
 				}
 			}
 			activeTweens.push(tween);
 		}
 		
-		protected static function onTick(event:Event):void {
-			for(var i:int = activeTweens.length - 1; i >= 0; i--){
-				if(activeTweens[i].update()){
-					activeTweens.splice(i, 1);
+		static function onTick(event:Event):Void {
+			for(i in activeTweens){
+				if (i.update()) {
+					activeTweens.remove(i);
 				}
 			}
 		}
 		
-		protected static function addInstance(si:SoundInstance):void {
+		static function addInstance(si:SoundInstance):Void {
 			si.mute = _mute;
 			if(instances.indexOf(si) == -1){
 				instances.push(si);
@@ -274,18 +276,16 @@ package treefortress.sound
 			instancesByType[si.type] = si;
 		}
 		
-		protected static function onSoundLoadComplete(event:Event):void {
-			var sound:Sound = event.target as Sound;
+		static function onSoundLoadComplete(event:Event):Void {
+			var sound:Sound = cast event.target;
 			loadCompleted.dispatch(instancesBySound[sound]);	
 		}
 		
-		protected static function onSoundLoadProgress(event:ProgressEvent):void { }
+		static function onSoundLoadProgress(event:ProgressEvent):Void { }
 		
-		protected static function onSoundLoadError(event:IOErrorEvent):void {
-			var sound:Sound = event.target as Sound;
+		static function onSoundLoadError(event:IOErrorEvent):Void {
+			var sound:Sound = cast event.target;
 			loadFailed.dispatch(instancesBySound[sound]);
 		}
 		
 	}
-}
-
