@@ -196,7 +196,7 @@ class SoundInstance {
 	 */
 	function onSoundComplete(event:Event):Void {
 		soundCompleted.dispatch(this);
-		if(loops == -1 && cast(event.target, SoundChannel) == channel){
+		if(loops == -1 && event.target == channel){
 			play(_volume, 0, -1, allowMultiple);
 		}
 	}
