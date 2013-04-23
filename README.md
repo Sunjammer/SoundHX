@@ -92,7 +92,7 @@ Controls playback of individual sounds, allowing you to easily stop, start, resu
 ###Advanced 
 
     //Mute one sound
-    SoundsAS.getSound("click").mute = true;
+    SoundHX.getSound("click").mute = true;
 
     //Fade from .3 to .7 over 3 seconds
     SoundHX.getSound("click").fadeFrom(.3, .7, 3000);
