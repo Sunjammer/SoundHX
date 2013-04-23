@@ -22,7 +22,6 @@ package treefortress.sound;
 		static var _mute:Bool;
 		static var _volume:Float;
 		
-		//Static Initialization
 		public static function initialize():Void
 		{
 			init();
@@ -172,7 +171,7 @@ package treefortress.sound;
 		 * Returns a SoundInstance for a specific type.
 		 */
 		public static function getSound(type:String, forceNew:Bool = false):SoundInstance {
-			var si:SoundInstance = instancesByType[type];
+			var si:SoundInstance = instancesByType.get(type);
 			if(si == null){ throw(new Error("[SoundHX] Sound with type '"+type+"' does not appear to be loaded.")); }
 			if(forceNew){
 				si = si.clone();	
@@ -272,20 +271,20 @@ package treefortress.sound;
 			if(instances.indexOf(si) == -1){
 				instances.push(si);
 			}
-			instancesBySound[si.sound] = si;
-			instancesByType[si.type] = si;
+			instancesBySound.set(si.sound, si);
+			instancesByType.set(si.type, si);
 		}
 		
 		static function onSoundLoadComplete(event:Event):Void {
 			var sound:Sound = cast event.target;
-			loadCompleted.dispatch(instancesBySound[sound]);	
+			loadCompleted.dispatch(instancesBySound.get(sound));	
 		}
 		
 		static function onSoundLoadProgress(event:ProgressEvent):Void { }
 		
 		static function onSoundLoadError(event:IOErrorEvent):Void {
 			var sound:Sound = cast event.target;
-			loadFailed.dispatch(instancesBySound[sound]);
+			loadFailed.dispatch(instancesBySound.get(sound));
 		}
 		
 	}
