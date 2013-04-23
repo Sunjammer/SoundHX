@@ -23,7 +23,7 @@ package treefortress.sound;
 		static var _volume:Float;
 		
 		//Static Initialization
-		public static function ineit():Void
+		public static function initialize():Void
 		{
 			init();
 			ticker = new Shape();
