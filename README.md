@@ -1,24 +1,29 @@
 [license]: https://github.com/treefortress/SoundAS/raw/master/license.txt
 
-SoundAS
+SoundHX
 =======
 
-A modern lightweight sound manager for AS3. 
+A modern lightweight sound manager for the Haxe Flash target, ported from AS3 by Furu Systems. 
 
-The goal of SoundAS is to simplifying playback of your audio files, with a focus on easily transitioning from one to another, and differentiating between SoundFX and Music Loops.
+The goal of SoundHX is to simplifying playback of your audio files, with a focus on easily transitioning from one to another, and differentiating between SoundFX and Music Loops.
 
 #Features
 * Clean modern API
 * Easy memory management
-* API Chaining: SoundAS.play("music").fadeTo(0);
+* API Chaining: SoundHX.play("music").fadeTo(0);
 * Built-in Tweening system, no dependancies
 
 #API Overview
 
-Full documentation can be found here: http://treefortress.com/libs/SoundAS/docs/.
+Full documentation can be found here: http://treefortress.com/libs/SoundHX/docs/.
 
-###SoundAS
+###SoundHX
 This Static Class is the main interface for the library. It's responsible for loading and controlling all sounds globally.
+Before you can use SoundHX, it needs to be set up with a call to initialize();
+
+Initialization:
+
+*    **initialize**():void
 
 Loading / Unloading: 
 
@@ -60,29 +65,29 @@ Controls playback of individual sounds, allowing you to easily stop, start, resu
 ###Loading
 
     //Load sound from an external file
-    SoundAS.loadSound("assets/Click.mp3", "click");
+    SoundHX.loadSound("assets/Click.mp3", "click");
 
     //Inject an already loaded Sound instance
-    SoundAS.addSound(clickSound, "click");
+    SoundHX.addSound(clickSound, "click");
 
 ###Basic Playback
 
     //Play sound.
         //allowMultiple: Allow multiple overlapping sound instances.
         //allowInterrupt: If this sound is currently playing, start it over.
-    SoundAS.play("click", volume, startTime, loops, allowMultiple, allowInterrupt);
+    SoundHX.play("click", volume, startTime, loops, allowMultiple, allowInterrupt);
 
     //Shortcut for typical game fx (no looping, allows for multiple instances)
-    SoundAS.playFx("click");
+    SoundHX.playFx("click");
 
     //Shortcut for typical game music (loops forever, no multiple instances)
-    SoundAS.playLoop("click");
+    SoundHX.playLoop("click");
 
     //Toggle Mute 
-    SoundAS.mute = !SoundAS.mute;
+    SoundHX.mute = !SoundHX.mute;
 
     //Fade Out
-    SoundAS.getSound("click").fadeTo(0);
+    SoundHX.getSound("click").fadeTo(0);
 
 ###Advanced 
 
@@ -90,10 +95,10 @@ Controls playback of individual sounds, allowing you to easily stop, start, resu
     SoundsAS.getSound("click").mute = true;
 
     //Fade from .3 to .7 over 3 seconds
-    SoundAS.getSound("click").fadeFrom(.3, .7, 3000);
+    SoundHX.getSound("click").fadeFrom(.3, .7, 3000);
 
 	//Manage a SoundInstance directly
-    var sound:SoundInstance = SoundAS.getSound("click");
+    var sound:SoundInstance = SoundHX.getSound("click");
     sound.play(volume);
     sound.position = 500; //Set position of sound in milliseconds
     sound.volume = .5; 
