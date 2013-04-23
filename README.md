@@ -23,42 +23,47 @@ Before you can use SoundHX, it needs to be set up with a call to initialize();
 
 Initialization:
 
-*    **initialize**():void
+*    **initialize**():Void
 
 Loading / Unloading: 
 
-*    **addSound**(type:String, sound:Sound):void
-*    **loadSound**(url:String, type:String, buffer:int = 100):void
-*    **removeSound**(type:String):void
-*    **removeAll**():void
+*    **addSound**(type:String, sound:Sound):Void
+*    **loadSound**(url:String, type:String, buffer:Int = 100):Void
+*    **removeSound**(type:String):Void
+*    **removeAll**():Void
 
 Playback:
 
-*    **getSound**(type:String, forceNew:Boolean = false):SoundInstance
-*    **play**(type:String, volume:Number = 1, startTime:Number = -1, loops:int = 0, allowMultiple:Boolean = false, allowInterrupt:Boolean = true):SoundInstance
-*    **playFx**(type:String, volume:Number = 1, startTime:Number = -1, loops:int = 0):SoundInstance
-*    **playLoop**(type:String, volume:Number = 1, startTime:Number = -1):SoundInstance
-*    **resume**(type:String, volume:Number = 1, startTime:Number = -1, loops:int = 0):SoundInstance
-*    **resumeAll**():void
+*    **getSound**(type:String, forceNew:Bool = false):SoundInstance
+*    **play**(type:String, volume:Float = 1, startTime:Float = -1, loops:Int = 0, allowMultiple:Bool = false, allowInterrupt:Bool = true):SoundInstance
+*    **playFx**(type:String, volume:Float = 1, startTime:Float = -1, loops:Int = 0):SoundInstance
+*    **playLoop**(type:String, volume:Float = 1, startTime:Float = -1):SoundInstance
+*    **resume**(type:String, volume:Float = 1, startTime:Float = -1, loops:Int = 0):SoundInstance
+*    **resumeAll**():Void
 *    **pause**(type:String):SoundInstance
-*    **pauseAll**():void
-*    **fadeFrom**(type:String, startVolume:Number = 0, endVolume:Number = 1, duration:Number = 1000)    
-*    **fadeAllFrom**(startVolume:Number = 0, endVolume:Number = 1, duration:Number = 1000)
-*    **fadeTo**(type:String, endVolume:Number = 1, duration:Number = 1000):SoundInstance
-*    **fadeAllTo**(endVolume:Number = 1, duration:Number = 1000):SoundInstance
+*    **pauseAll**():Void
+*    **set masterVolume**(value:Float):Void
+*    **fadeFrom**(type:String, startVolume:Float = 0, endVolume:Float = 1, duration:Float = 1000)    
+*    **fadeAllFrom**(startVolume:Float = 0, endVolume:Float = 1, duration:Float = 1000)
+*    **fadeMasterFrom**(startVolume:Float = 0, endVolume:Float = 1, duration:Float = 1000)    
+*    **fadeTo**(type:String, endVolume:Float = 1, duration:Float = 1000):SoundInstance
+*    **fadeAllTo**(endVolume:Float = 1, duration:Float = 1000):SoundInstance
+*    **fadeMasterTo**(endVolume:Float = 1, duration:Float = 1000)  
 
 ####SoundInstance
 Controls playback of individual sounds, allowing you to easily stop, start, resume and set volume or position.
 
-*     **play**(volume:Number = 1, startTime:int = -1, loops:int = 0, allowMultiple:Boolean = true):SoundInstance
+*     **play**(volume:Float = 1, startTime:Float = -1, loops:Int = 0, allowMultiple:Bool = true):SoundInstance
 *     **pause**():SoundInstance
 *     **resume**():SoundInstance
 *     **stop**():SoundInstance
-*     **set volume**(value:Number):void
-*     **set mute**(value:Boolean):void
-*     **fadeFrom**(startVolume:Number, endVolume:Number, duration:Number = 1000):SoundInstance
-*     **fadeTo**(endVolume:Number, duration:Number = 1000):SoundInstance
-*     **destroy**():void
+*     **set volume**(value:Float):Void
+*     **set mute**(value:Bool):Void
+*     **fadeFrom**(startVolume:Float, endVolume:Float, duration:Float = 1000):SoundInstance
+*     **fadeTo**(endVolume:Float, duration:Float = 1000):SoundInstance
+*     **destroy**():Void
+*     **endFade**(applyEndVolume:Bool = false):SoundInstance
+
 
 #Code Examples
 
