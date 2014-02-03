@@ -9,6 +9,7 @@ import flash.Lib;
 import flash.media.Sound;
 import flash.media.SoundLoaderContext;
 import flash.net.URLRequest;
+import flash.utils.ByteArray;
 
 using Lambda;
 class SoundHX
@@ -107,6 +108,22 @@ class SoundHX
 	public static function pauseAll():Void {
 		for(i in instances){
 			i.pause();
+		}
+	}
+	
+	/**
+	 * Stop a specific sound
+	 */
+	public static function stop(type:String):SoundInstance {
+		return getSound(type).stop();
+	}
+	
+	/**
+	 * Stop all sounds
+	 */
+	public static function stopAll():Void {
+		for(i in instances){
+			i.stop();
 		}
 	}
 	
@@ -343,8 +360,20 @@ class SoundHX
 		var sound:Sound = cast event.target;
 		loadFailed.dispatch(instancesBySound.get(sound));
 	}
-
-
+	
+	/**
+	 * Get the samples of the sound as 44.1 kHz as 32-bit floating-point
+	 * @param	type
+	 * @return
+	 */
+	public static function getSoundBytes(type:String):ByteArray
+	{
+		var si:SoundInstance = instancesByType.get(type);
+		if (si == null)
+			return null;
+		else
+			return si.getBytes();
+	}
 	
 }
 

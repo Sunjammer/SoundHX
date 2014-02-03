@@ -5,6 +5,7 @@ package treefortress.sound;
 	import flash.media.Sound;
 	import flash.media.SoundChannel;
 	import flash.media.SoundTransform;
+	import flash.utils.ByteArray;
 	
 	class SoundInstance {
 		
@@ -168,6 +169,18 @@ package treefortress.sound;
 			return value;
 		}
 		
+		public var normalizedPosition(get, set):Float;
+		function get_normalizedPosition():Float { return channel != null ? channel.position / sound.length : 0; }
+		function set_normalizedPosition(value:Float) {
+			if(channel!=null){ 
+				stopChannel(channel);
+			}
+			value *= sound.length;
+			channel = sound.play(value, loops);
+			channel.addEventListener(Event.SOUND_COMPLETE, onSoundComplete);
+			return value;
+		}
+		
 
 		/**
 		 * Value between 0 and 1. You can call this while muted to change volume, and it will not break the mute.
@@ -251,5 +264,16 @@ package treefortress.sound;
 				channel.stop(); 
 			} catch(e:Error){};
 		}		
+		
+		/**
+		 * Get the samples of the sound as 44.1 kHz as 32-bit floating-point
+		 * @return
+		 */		
+		public function getBytes():ByteArray
+		{
+			var bytes:ByteArray = new ByteArray();
+			sound.extract(bytes, sound.bytesTotal);
+			return bytes;
+		}
 		
 	}
