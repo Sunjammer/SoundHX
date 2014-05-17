@@ -46,10 +46,6 @@ package treefortress.sound;
 		public var allowMultiple:Bool;
 		
 		
-		var _muted:Bool;
-		var _volume:Float;
-		var _masterVolume:Float;
-		var _position:Int;
 		var pauseTime:Float;
 		
 		var soundTransform:SoundTransform;
@@ -58,9 +54,7 @@ package treefortress.sound;
 		public function new(sound:Sound = null){
 			this.sound = sound;
 			pauseTime = 0;
-			_volume = 1;			
-			_masterVolume = 1;
-			
+
 			soundCompleted = new Signal<SoundInstance>();
 			soundTransform = new SoundTransform();
 		}
@@ -86,7 +80,7 @@ package treefortress.sound;
  				channel = sound.play(startTime, loops == -1? 0 : loops);
 			}
 			channel.addEventListener(Event.SOUND_COMPLETE, onSoundComplete);
-			this.volume = volume;	
+			this.volume = volume;
 			this.mute = mute;
 			return this;
 		}
@@ -106,7 +100,7 @@ package treefortress.sound;
 		 * Resume from previously paused time, or start over if it's not playing.
 		 */
 		public function resume():SoundInstance {
-			play(_volume, pauseTime, loops, allowMultiple);
+			play(volume, pauseTime, loops, allowMultiple);
 			return this;
 		}
 		
@@ -185,16 +179,15 @@ package treefortress.sound;
 		/**
 		 * Value between 0 and 1. You can call this while muted to change volume, and it will not break the mute.
 		 */
-		public var volume(default, set_volume):Float;
+		public var volume(default, set_volume):Float = 1;
 		function set_volume(value:Float):Float {
 			//Update the voume value, but respect the mute flag.
-			if(value < 0){ value = 0; } else if(value > 1 || Math.isNaN(volume)){ value = 1; }
+			if(value < 0){ value = 0; } else if(value > 1 || Math.isNaN(value)){ value = 1; }
 			volume = value;
-			if(_muted){ return volume; }
-			
+			if(mute){ return volume; }
 			//Update actual sound volume
 			if(soundTransform==null){ soundTransform = new SoundTransform(); }
-			soundTransform.volume = _volume * _masterVolume;
+			soundTransform.volume = volume * masterVolume;
 			if(channel!=null){
 				channel.soundTransform = soundTransform;
 			}
@@ -204,7 +197,7 @@ package treefortress.sound;
 		/**
 		 * Sets the master volume, which is multiplied with the current Volume level
 		 */
-		public var masterVolume(default, set_masterVolume):Float;
+		public var masterVolume(default, set_masterVolume):Float = 1;
 		function set_masterVolume(value:Float):Float {
 			if (masterVolume == value) { return value;  }
 			//Update the voume value, but respect the mute flag.
@@ -229,7 +222,7 @@ package treefortress.sound;
 		function onSoundComplete(event:Event):Void {
 			soundCompleted.dispatch(this);
 			if(loops == -1 && event.target == channel){
-				play(_volume, 0, -1, allowMultiple);
+				play(volume, 0, -1, allowMultiple);
 			}
 		}
 		
