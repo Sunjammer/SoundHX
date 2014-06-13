@@ -184,10 +184,10 @@ package treefortress.sound;
 			//Update the voume value, but respect the mute flag.
 			if(value < 0){ value = 0; } else if(value > 1 || Math.isNaN(value)){ value = 1; }
 			volume = value;
-			if(mute){ return volume; }
 			//Update actual sound volume
 			if(soundTransform==null){ soundTransform = new SoundTransform(); }
 			soundTransform.volume = volume * masterVolume;
+			if(mute){ return volume; }
 			if(channel!=null){
 				channel.soundTransform = soundTransform;
 			}
